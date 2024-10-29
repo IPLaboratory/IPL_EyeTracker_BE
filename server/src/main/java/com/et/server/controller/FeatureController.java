@@ -53,13 +53,14 @@ public class FeatureController {
             new RestTemplate().postForObject(arduinoUrl, entity, String.class);
 
             synchronized (this) {
-                wait(5000); // 최대 5초 대기 (5000)
+                wait(5000); // 최대 아두이노 대기 시간
             }
 
             Map<String, Object> response = new HashMap<>();
             response.put("status", HttpStatus.OK.value());
             response.put("message", value ? "수신부 작동 요청 성공!" : "수신부 작동 요청 실패!");
             response.put("irValue", getIrValue);
+            getIrValue = null;
             response.put("booleanValue", false);
             return ResponseEntity.ok(response);
         } catch (InterruptedException e) {
