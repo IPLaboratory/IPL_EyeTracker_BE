@@ -40,13 +40,13 @@ public class GestureService {
     @Transactional
     public void initializeGestures() {
         if (gestureRepository.findAll().isEmpty()) {
-            gestureRepository.save(new Gesture(null, "up.png", "정면을 보다가 위를 봐주세요"));
-            gestureRepository.save(new Gesture(null, "small.png", "정면을 보고 눈을 작게 떠주세요"));
-            gestureRepository.save(new Gesture(null, "right.png", "정면을 보다가 오른쪽을 봐주세요"));
-            gestureRepository.save(new Gesture(null, "left.png", "정면을 보다가 왼쪽을 봐주세요"));
-            gestureRepository.save(new Gesture(null, "down.png", "정면을 보다가 아래를 봐주세요"));
-            gestureRepository.save(new Gesture(null, "close.png", "정면을 보고 눈을 감았다 떠주세요"));
-            gestureRepository.save(new Gesture(null, "big.png", "정면을 보고 눈을 크게 떠주세요"));
+            gestureRepository.save(new Gesture("Up", "up.png", "정면을 보다가 위를 봐주세요"));
+//            gestureRepository.save(new Gesture(null, "small", "small.png", "정면을 보고 눈을 작게 떠주세요"));
+            gestureRepository.save(new Gesture("Right", "right.png", "정면을 보다가 오른쪽을 봐주세요"));
+            gestureRepository.save(new Gesture("Left", "left.png", "정면을 보다가 왼쪽을 봐주세요"));
+//            gestureRepository.save(new Gesture(null, "down", "down.png", "정면을 보다가 아래를 봐주세요"));
+            gestureRepository.save(new Gesture("Blink", "close.png", "정면을 보고 눈을 감았다 떠주세요"));
+//            gestureRepository.save(new Gesture(null, "big", "big.png", "정면을 보고 눈을 크게 떠주세요"));
         }
     }
 

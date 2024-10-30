@@ -89,27 +89,34 @@ public class EyeTrackingController {
     }
 
     @PostMapping("/getDevice")
-    public ResponseEntity<Map<String, Object>> getDeviceName(@RequestParam Long deviceId) {
+    public ResponseEntity<Map<String, Object>> getDevice(@RequestParam String deviceName) {
         Map<String, Object> response = new HashMap<>();
-        MLDeviceId = deviceId;
 
-        // deviceId로 디바이스 조회
-        Device device = deviceRepository.findById(deviceId);
+        // deviceName으로 디바이스 조회
+        Device device = deviceRepository.findByName(deviceName);
 
         if (device == null) {
-            log.warn("존재하지 않는 deviceId: {}", deviceId);
+            log.warn("존재하지 않는 deviceName: {}", deviceName);
             response.put("status", HttpStatus.NOT_FOUND.value());
-            response.put("message", "해당 ID의 디바이스가 존재하지 않습니다.");
+            response.put("message", "해당 이름의 디바이스가 존재하지 않습니다.");
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
-        // 디바이스 이름 반환
+        // 디바이스 ID 반환
+        MLDeviceId = device.getId();  // 조회된 디바이스의 ID 저장
         response.put("status", HttpStatus.OK.value());
         response.put("message", "디바이스 조회 성공");
+        response.put("deviceId", device.getId());
         response.put("deviceName", device.getName());
-        log.info("deviceId {}의 이름: {}", deviceId, device.getName());
+
+        log.info("ML 객체 탐지 성공 - deviceId: {}, {}", device.getId(), deviceName);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+//    @PostMapping("/getGesture")
+//    public ResponseEntity<Map<String, Object>> getGesture(@RequestParam String gestureName) {
+//
+//    }
 
     @PostMapping("/end")
     public ResponseEntity<Map<String, Object>> eyeTrackingEnd() {

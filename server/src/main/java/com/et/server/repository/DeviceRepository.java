@@ -28,4 +28,12 @@ public class DeviceRepository {
                 .setParameter("homeId", homeId)
                 .getResultList();
     }
+
+    public Device findByName(String deviceName) {
+        List<Device> result = em.createQuery("from Device d where d.name = :deviceName", Device.class)
+                .setParameter("deviceName", deviceName)
+                .getResultList();
+
+        return result.isEmpty() ? null : result.get(0);  // 조회 결과가 없으면 null 반환
+    }
 }

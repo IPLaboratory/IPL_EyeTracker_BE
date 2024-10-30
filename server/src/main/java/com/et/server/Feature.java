@@ -25,7 +25,7 @@ public class Feature {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    @JoinColumn(name = "gesture_id")
+    @JoinColumn(name = "gesture_name")
     private Gesture gesture;
 
     public Feature() {
