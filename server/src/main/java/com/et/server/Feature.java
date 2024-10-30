@@ -21,7 +21,7 @@ public class Feature {
     private Device device;
 
     private String name;
-    private String ir;  // 라베파 통신
+    private String ir;  // 아두이노 통신
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
