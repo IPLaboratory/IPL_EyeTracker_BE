@@ -94,6 +94,16 @@ public class FeatureController {
         try {
             log.info("기능 추가 요청: deviceId={}, gestureName={}, name={}", deviceId, gestureName, name);
 
+            // 중복 확인: 같은 deviceId와 gestureName이 이미 등록되어 있는지 확인
+            List<Feature> existingFeatures = featureService.findAllFeatures(deviceId);
+            boolean isDuplicate = existingFeatures.stream()
+                    .anyMatch(feature -> feature.getGesture() != null && feature.getGesture().getName().equals(gestureName));
+
+            if (isDuplicate) {
+                log.warn("기능 추가 실패 - 이미 동일한 deviceId와 gestureName 조합이 존재합니다: deviceId={}, gestureName={}", deviceId, gestureName);
+                return createConflictResponse("해당 제스처는 이미 이 기기에 등록되어 있습니다.");
+            }
+
             Feature feature = new Feature();
             feature.setName(name);
             feature.setIr(ir);
@@ -102,15 +112,12 @@ public class FeatureController {
             log.info("기능 추가 성공: featureId={}", feature.getId());
             return createResponse("기능 추가 성공!", HttpStatus.CREATED, feature);
         } catch (DataIntegrityViolationException e) {
-            // 중복 제스처로 인한 기능 추가 실패 처리
             log.warn("이미 사용 중인 제스처로 기능 추가 실패: gestureName={}", gestureName);
             return createConflictResponse("이미 사용 중인 제스처입니다.");
         } catch (IllegalStateException e) {
-            // 기능 추가 실패 시 처리
             log.error("기능 추가 실패: {}", e.getMessage());
             return createResponse("기능 추가 실패: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            // 기타 예외 처리
             log.error("기능 추가 중 오류 발생: {}", e.getMessage());
             return createResponse("기능 추가 중 오류 발생: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
