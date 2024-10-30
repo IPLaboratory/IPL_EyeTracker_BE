@@ -35,23 +35,28 @@ public class FeatureController {
     @Value("${app.upload-dir}")
     private String UPLOAD_DIR;
 
-    private volatile String getIrValue;
+    private volatile String getIrValue;     // 수신된 IR 값을 저장하는 변수
 
+    // 아두이노 서버에 Boolean 값을 보내는 메서드
     @PostMapping("/sendBoolean")
     public ResponseEntity<Map<String, Object>> sendBoolean(@RequestParam boolean value) {
         String arduinoUrl = ARDUINO_URL + "/sendBoolean";
 
         try {
+            // HTTP 요청 헤더 설정
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.TEXT_PLAIN);
 
+            // HTTP 요청 엔터티 생성 및 요청 전송
             HttpEntity<String> entity = new HttpEntity<>(String.valueOf(value), headers);
             new RestTemplate().postForObject(arduinoUrl, entity, String.class);
 
+            // 아두이노의 응답 대기
             synchronized (this) {
-                wait(5000);
+                wait(5000); // 최대 대기 시간 5초
             }
 
+            // 응답 데이터 구성 및 반환
             Map<String, Object> response = new HashMap<>();
             response.put("status", HttpStatus.OK.value());
             response.put("message", value ? "수신부 작동 요청 성공!" : "수신부 작동 요청 실패!");
@@ -68,17 +73,19 @@ public class FeatureController {
         }
     }
 
+    // 아두이노에서 수신된 IR 값을 처리하는 메서드
     @PostMapping("/receiveIr")
     public ResponseEntity<Map<String, Object>> receiveIrValue(@RequestBody Map<String, String> body) {
         String irValue = body.get("irValue");
         synchronized (this) {
             getIrValue = irValue;
-            notifyAll();
+            notifyAll();    // 대기 중인 sendBoolean 메서드에 알림
         }
         log.info("IR 값 수신 성공: irValue = {}", irValue);
         return createResponse("IR 수신 성공! ir: " + irValue, HttpStatus.OK);
     }
 
+    // 새로운 Feature(기능)를 추가하는 메서드
     @PostMapping("/addFeature")
     public ResponseEntity<Map<String, Object>> addFeature(@RequestParam Long deviceId,
                                                           @RequestParam String name,
@@ -95,17 +102,21 @@ public class FeatureController {
             log.info("기능 추가 성공: featureId={}", feature.getId());
             return createResponse("기능 추가 성공!", HttpStatus.CREATED, feature);
         } catch (DataIntegrityViolationException e) {
+            // 중복 제스처로 인한 기능 추가 실패 처리
             log.warn("이미 사용 중인 제스처로 기능 추가 실패: gestureName={}", gestureName);
             return createConflictResponse("이미 사용 중인 제스처입니다.");
         } catch (IllegalStateException e) {
+            // 기능 추가 실패 시 처리
             log.error("기능 추가 실패: {}", e.getMessage());
             return createResponse("기능 추가 실패: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
+            // 기타 예외 처리
             log.error("기능 추가 중 오류 발생: {}", e.getMessage());
             return createResponse("기능 추가 중 오류 발생: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    // 특정 기기의 모든 Feature(기능) 조회
     @GetMapping("/findAllFeatures")
     public ResponseEntity<MultiValueMap<String, Object>> findAllFeatures(@RequestParam Long deviceId) {
         log.info("전체 기능 조회 요청: deviceId={}", deviceId);
@@ -116,11 +127,13 @@ public class FeatureController {
         for (Feature feature : features) {
             log.info("FeatureId={}, Name={}, IR={}", feature.getId(), feature.getName(), feature.getIr());
 
+            // Feature 데이터를 JSON 형태로 추가
             Map<String, Object> featureData = createFeatureDataMap(feature);
             HttpHeaders jsonHeaders = new HttpHeaders();
             jsonHeaders.setContentType(MediaType.APPLICATION_JSON);
             responseData.add("featureData", new ResponseEntity<>(featureData, jsonHeaders, HttpStatus.OK));
 
+            // 제스처의 사진 파일 추가
             if (feature.getGesture() != null) {
                 addPhotoToResponseData(responseData, feature.getGesture());
             }
@@ -133,6 +146,7 @@ public class FeatureController {
         return new ResponseEntity<>(responseData, headers, HttpStatus.OK);
     }
 
+    // Feature 데이터 맵 생성
     private Map<String, Object> createFeatureDataMap(Feature feature) {
         Map<String, Object> featureData = new HashMap<>();
         featureData.put("featureId", feature.getId());
@@ -140,6 +154,7 @@ public class FeatureController {
         return featureData;
     }
 
+    // 제스처의 사진 파일을 응답 데이터에 추가
     private void addPhotoToResponseData(MultiValueMap<String, Object> responseData, Gesture gesture) {
         String photoFilename = gesture.getPhotoPath();
         if (photoFilename != null && !photoFilename.isEmpty()) {
@@ -155,6 +170,7 @@ public class FeatureController {
         }
     }
 
+    // 응답 생성 (기능 추가 시)
     private ResponseEntity<Map<String, Object>> createResponse(String message, HttpStatus status, Feature feature) {
         Map<String, Object> response = new HashMap<>();
         response.put("status", status.value());
@@ -163,6 +179,7 @@ public class FeatureController {
         return new ResponseEntity<>(response, status);
     }
 
+    // 일반 응답 생성
     private ResponseEntity<Map<String, Object>> createResponse(String message, HttpStatus status) {
         Map<String, Object> response = new HashMap<>();
         response.put("status", status.value());
@@ -170,6 +187,7 @@ public class FeatureController {
         return new ResponseEntity<>(response, status);
     }
 
+    // 중복 충돌 응답 생성
     private ResponseEntity<Map<String, Object>> createConflictResponse(String message) {
         Map<String, Object> response = new HashMap<>();
         response.put("status", "409");
