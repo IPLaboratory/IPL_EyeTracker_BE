@@ -47,7 +47,7 @@ public class GestureController {
         MultiValueMap<String, Object> responseData = new LinkedMultiValueMap<>();
 
         for (Gesture gesture : gestures) {
-            log.info("Gesture ID={}", gesture.getId());
+            log.info("Gesture Name={}", gesture.getName());
 
             // 제스처 정보(JSON) 추가
             Map<String, Object> gestureData = createGestureDataMap(gesture);
@@ -76,8 +76,8 @@ public class GestureController {
                 log.info("기능이 등록되지 않음: deviceId={}", deviceId);
             } else {
                 for (Feature feature : features) {
-                    Long gestureId = (feature.getGesture() != null) ? feature.getGesture().getId() : null;
-                    log.info("FeatureId={}, Name={}, GestureId={}", feature.getId(), feature.getName(), gestureId);
+                    String gestureName = (feature.getGesture() != null) ? feature.getGesture().getName() : null;
+                    log.info("FeatureId={}, Name={}, GestureName={}", feature.getId(), feature.getName(), gestureName);
                 }
             }
 
@@ -102,16 +102,15 @@ public class GestureController {
 
         // 제스처 정보 추가
         if (feature.getGesture() != null) {
-            featureData.put("gestureId", feature.getGesture().getId());
+            featureData.put("gestureName", feature.getGesture().getName());
         }
         return featureData;
     }
 
-
     // 제스처 데이터 맵 생성 메서드
     private Map<String, Object> createGestureDataMap(Gesture gesture) {
         Map<String, Object> gestureData = new HashMap<>();
-        gestureData.put("id", gesture.getId());
+        gestureData.put("name", gesture.getName());
         gestureData.put("description", gesture.getDescription());
         return gestureData;
     }

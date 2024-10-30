@@ -23,7 +23,7 @@ public class FeatureService {
 
     // 기능 추가
     @Transactional
-    public void addFeature(Long deviceId, Long gestureId, Feature feature) {
+    public void addFeature(Long deviceId, String gestureName, Feature feature) {
         // Device 조회
         Device device = deviceRepository.findById(deviceId);
         if (device == null) {
@@ -31,7 +31,7 @@ public class FeatureService {
         }
 
         // Gesture 조회
-        Gesture gesture = gestureRepository.findById(gestureId);
+        Gesture gesture = gestureRepository.findByName(gestureName);
         if (gesture == null) {
             throw new IllegalStateException("제스처를 찾을 수 없습니다.");
         }

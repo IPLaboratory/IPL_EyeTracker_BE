@@ -1,6 +1,7 @@
 package com.et.server;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,17 +9,16 @@ import lombok.Setter;
 @Getter @Setter
 public class Gesture {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    @Id
+    private String name;  // Primary Key로 설정
     private String photoPath;
     private String description;
 
     public Gesture() {
     }
 
-    public Gesture(Long id, String photoPath, String description) {
-        this.id = id;
+    public Gesture(String name, String photoPath, String description) {
+        this.name = name;
         this.photoPath = photoPath;
         this.description = description;
     }

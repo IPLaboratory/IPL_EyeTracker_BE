@@ -13,18 +13,18 @@ public class GestureRepository {
     @PersistenceContext
     private EntityManager em;
 
-    public Long save(Gesture gesture) {
-        if (gesture.getId() == null) {
+    public String save(Gesture gesture) {
+        if (findByName(gesture.getName()) == null) {
             em.persist(gesture);
-            return gesture.getId();
+            return gesture.getName();
         } else {
             em.merge(gesture);
-            return gesture.getId();
+            return gesture.getName();
         }
     }
 
-    public Gesture findById(Long id) {
-        return em.find(Gesture.class, id);
+    public Gesture findByName(String name) {
+        return em.find(Gesture.class, name);
     }
 
     @SuppressWarnings("unchecked")
