@@ -1,15 +1,14 @@
 package com.et.server.controller;
 
+import com.et.server.Device;
 import com.et.server.Member;
 import com.et.server.repository.MemberRepository;
+import com.et.server.repository.DeviceRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -27,16 +26,24 @@ public class EyeTrackingController {
     @Autowired
     private MemberRepository memberRepository;
 
+    @Autowired
+    private DeviceRepository deviceRepository;
+
     @Value("${app.ml-server-url}")
     private String ML_SERVER_URL;
 
     private boolean cameraOn;
     private String sendMemberName;
 
+    // 아이트래킹에 필요한 정보들
+    private Long MLHomeId;
+    private Long MLDeviceId;
+
     @PostMapping("/memberName")
-    public ResponseEntity<Map<String, Object>> memberName(@RequestParam(required = false) Long homeId,
+    public ResponseEntity<Map<String, Object>> memberName(@RequestParam Long homeId,
                                                           @RequestParam Long memberId,
                                                           @RequestParam String memberName) {
+        MLHomeId = homeId;
         Map<String, Object> response = new HashMap<>();
 
         // 파라미터 값 로그 출력
@@ -81,6 +88,29 @@ public class EyeTrackingController {
         }
     }
 
+    @PostMapping("/getDevice")
+    public ResponseEntity<Map<String, Object>> getDeviceName(@RequestParam Long deviceId) {
+        Map<String, Object> response = new HashMap<>();
+        MLDeviceId = deviceId;
+
+        // deviceId로 디바이스 조회
+        Device device = deviceRepository.findById(deviceId);
+
+        if (device == null) {
+            log.warn("존재하지 않는 deviceId: {}", deviceId);
+            response.put("status", HttpStatus.NOT_FOUND.value());
+            response.put("message", "해당 ID의 디바이스가 존재하지 않습니다.");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        // 디바이스 이름 반환
+        response.put("status", HttpStatus.OK.value());
+        response.put("message", "디바이스 조회 성공");
+        response.put("deviceName", device.getName());
+        log.info("deviceId {}의 이름: {}", deviceId, device.getName());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @PostMapping("/end")
     public ResponseEntity<Map<String, Object>> eyeTrackingEnd() {
         log.info("아이트래킹 종료 요청");
@@ -98,7 +128,7 @@ public class EyeTrackingController {
         }
     }
 
-    // ML 서버로 GET 요청 전송
+    // ML 서버로 카메라 on/off 요청
     private void sendRequestToMLServer() {
         try {
             // 요청할 URL 생성
