@@ -1,6 +1,6 @@
 package com.et.server.repository;
 
-import com.et.server.Home;
+import com.et.server.entity.Home;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;

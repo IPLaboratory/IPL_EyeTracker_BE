@@ -1,7 +1,7 @@
 package com.et.server.service;
 
-import com.et.server.Home;
-import com.et.server.Member;
+import com.et.server.entity.Home;
+import com.et.server.entity.Member;
 import com.et.server.repository.HomeRepository;
 import com.et.server.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;

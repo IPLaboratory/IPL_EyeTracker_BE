@@ -31,4 +31,4 @@ app:
   base-url: http://192.168.0.77:8080
   arduino-url: http://192.168.0.147:8088
   upload-dir: C:/Users/user/Desktop/SCH/IPL/2024_AcademicFestival/server_file/
-  ml-server-url: http://220.69.208.229:8000
+  ml-server-url: http://220.69.208.233:8000

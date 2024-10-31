@@ -1,7 +1,7 @@
 package com.et.server.service;
 
-import com.et.server.Device;
-import com.et.server.Home;
+import com.et.server.entity.Device;
+import com.et.server.entity.Home;
 import com.et.server.repository.DeviceRepository;
 import com.et.server.repository.HomeRepository;
 import lombok.RequiredArgsConstructor;

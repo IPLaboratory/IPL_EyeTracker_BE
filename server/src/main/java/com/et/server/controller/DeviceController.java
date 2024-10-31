@@ -1,6 +1,6 @@
 package com.et.server.controller;
 
-import com.et.server.Device;
+import com.et.server.entity.Device;
 import com.et.server.service.DeviceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

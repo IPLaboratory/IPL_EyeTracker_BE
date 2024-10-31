@@ -1,8 +1,8 @@
 package com.et.server.service;
 
-import com.et.server.Device;
-import com.et.server.Feature;
-import com.et.server.Gesture;
+import com.et.server.entity.Device;
+import com.et.server.entity.Feature;
+import com.et.server.entity.Gesture;
 import com.et.server.repository.DeviceRepository;
 import com.et.server.repository.FeatureRepository;
 import com.et.server.repository.GestureRepository;
