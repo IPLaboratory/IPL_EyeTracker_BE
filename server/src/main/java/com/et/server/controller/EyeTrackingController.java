@@ -6,6 +6,8 @@ import com.et.server.Member;
 import com.et.server.repository.MemberRepository;
 import com.et.server.repository.DeviceRepository;
 import com.et.server.service.FeatureService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -184,21 +186,28 @@ public class EyeTrackingController {
             headers.setContentType(MediaType.TEXT_PLAIN);
 
             HttpEntity<String> entity = new HttpEntity<>(irValue, headers);
-            log.info("아두이노 서버: URL={}, IR 값={}", arduinoUrl, irValue);
+            log.info("아두이노 서버에 IR 값 요청: URL={}, IR 값={}", arduinoUrl, irValue); // 아두이노 서버 요청 전 로그
 
             // 아두이노 서버에 POST 요청 전송
             ResponseEntity<String> response = restTemplate.postForEntity(arduinoUrl, entity, String.class);
 
             // 아두이노 서버 응답 처리
             if (response.getStatusCode() == HttpStatus.OK) {
-                String responseBody = response.getBody();
-                log.info("아두이노 서버 응답 성공: {}", responseBody); // 성공 응답 로그
-                return responseBody; // "success" 또는 "fail"
+                // 응답 본문을 JSON으로 파싱
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode responseBody = mapper.readTree(response.getBody());
+                int status = responseBody.path("status").asInt();
+                String message = responseBody.path("message").asText();
+
+                log.info("아두이노 서버 응답 성공: status={}, message={}", status, message); // 성공 응답 로그
+
+                // status가 200이면 성공으로 처리
+                return (status == 200) ? "success" : "fail";
             } else {
                 log.error("아두이노 서버로부터 예상치 못한 응답 코드: {}", response.getStatusCode());
                 return "error";
             }
-        } catch (RestClientException e) {
+        } catch (Exception e) {
             log.error("아두이노 서버로 IR 전송 중 오류 발생: {}", e.getMessage());
             return "error";
         }
