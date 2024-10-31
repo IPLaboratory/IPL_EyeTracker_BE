@@ -1,8 +1,8 @@
 package com.et.server.controller;
 
-import com.et.server.Device;
-import com.et.server.Feature;
-import com.et.server.Member;
+import com.et.server.entity.Device;
+import com.et.server.entity.Feature;
+import com.et.server.entity.Member;
 import com.et.server.repository.MemberRepository;
 import com.et.server.repository.DeviceRepository;
 import com.et.server.service.FeatureService;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -112,14 +111,32 @@ public class EyeTrackingController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
-        // 디바이스 ID 반환
-        MLDeviceId = device.getId();  // 조회된 디바이스의 ID 저장
+        // 디바이스 ID 설정 및 반환
+        MLDeviceId = device.getId();
         response.put("status", HttpStatus.OK.value());
         response.put("message", "디바이스 조회 성공");
         response.put("deviceId", device.getId());
         response.put("deviceName", device.getName());
 
         log.info("ML 객체 탐지 성공 - deviceId: {}, {}", device.getId(), deviceName);
+
+        // MLDeviceId에 매핑된 모든 Feature 조회
+        List<Feature> features = featureService.findAllFeatures(MLDeviceId);
+
+        if (features.isEmpty()) {
+            log.info("기기에 매핑된 기능이 없습니다: deviceId={}", MLDeviceId);
+            response.put("status", HttpStatus.NOT_FOUND.value());
+            response.put("message", "해당 기기에 매핑된 기능이 없습니다.");
+        } else {
+            // 매핑된 Feature와 gestureName 반환을 위한 Map 생성
+            List<Map<String, Object>> featureList = features.stream()
+                    .map(this::featureToMap) // featureToMap 메서드로 Feature 데이터를 Map으로 변환
+                    .toList();
+
+            response.put("features", featureList);
+            log.info("기기에 매핑된 기능 및 제스처 조회 성공 - deviceId: {}, featureCount: {}", MLDeviceId, features.size());
+        }
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

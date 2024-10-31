@@ -1,6 +1,6 @@
 package com.et.server.controller;
 
-import com.et.server.Home;
+import com.et.server.entity.Home;
 import com.et.server.service.HomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

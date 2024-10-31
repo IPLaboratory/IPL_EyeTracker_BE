@@ -1,4 +1,4 @@
-package com.et.server;
+package com.et.server.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Entity
 @Getter @Setter
-public class Device {
+public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,4 +19,6 @@ public class Device {
 
     private String name;
     private String photoPath;
+    private String videoPath;
+    private String videoPath2;
 }

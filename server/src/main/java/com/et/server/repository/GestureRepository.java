@@ -1,6 +1,6 @@
 package com.et.server.repository;
 
-import com.et.server.Gesture;
+import com.et.server.entity.Gesture;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;

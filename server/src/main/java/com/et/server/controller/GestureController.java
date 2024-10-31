@@ -1,9 +1,9 @@
 package com.et.server.controller;
 
-import com.et.server.Feature;
+import com.et.server.entity.Feature;
 import com.et.server.service.FeatureService;
 import com.et.server.service.GestureService;
-import com.et.server.Gesture;
+import com.et.server.entity.Gesture;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

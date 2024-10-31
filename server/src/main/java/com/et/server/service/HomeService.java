@@ -1,6 +1,6 @@
 package com.et.server.service;
 
-import com.et.server.Home;
+import com.et.server.entity.Home;
 import com.et.server.repository.HomeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

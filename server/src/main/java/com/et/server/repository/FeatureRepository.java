@@ -1,6 +1,6 @@
 package com.et.server.repository;
 
-import com.et.server.Feature;
+import com.et.server.entity.Feature;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
