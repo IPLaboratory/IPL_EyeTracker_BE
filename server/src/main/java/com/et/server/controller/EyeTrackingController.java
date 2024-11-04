@@ -134,7 +134,7 @@ public class EyeTrackingController {
                     .toList();
 
             response.put("features", featureList);
-            log.info("기기에 매핑된 기능 및 제스처 조회 성공 - deviceId: {}, featureCount: {}", MLDeviceId, features.size());
+            log.info("기기에 매핑된 기능 및 제스처 조회 성공 - {}, {}, featureCount: {}", MLDeviceId, deviceName, features.size());
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -176,7 +176,7 @@ public class EyeTrackingController {
 
         // 아두이노 서버에 IR 값 전송
         String irValue = matchingFeature.getIr();
-        log.info("아두이노 서버로 전송할 IR 값: {}", irValue);
+        log.info("아두이노 서버로 전송 : {}, {}", gestureName, irValue);
 
         String arduinoResponse = sendIrToArduino(irValue);
         if ("success".equals(arduinoResponse)) {
